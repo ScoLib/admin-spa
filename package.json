@@ -6,9 +6,9 @@
   "author": "Pan <panfree23@gmail.com>",
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
-    "build:report": "npm_config_report=true node build/build.js",
     "build:prod": "cross-env NODE_ENV=production env_config=prod node build/build.js",
     "build:sit": "cross-env NODE_ENV=production env_config=sit node build/build.js",
+    "build:sit-preview": "cross-env NODE_ENV=production env_config=sit npm_config_preview=true npm_config_report=true node build/build.js",
     "lint": "eslint --ext .js,.vue src",
     "test": "npm run lint"
   },
@@ -57,6 +57,7 @@
     "postcss-import": "11.0.0",
     "postcss-loader": "2.0.9",
     "postcss-url": "7.3.0",
+    "pushstate-server": "^3.0.1",
     "rimraf": "2.6.2",
     "sass-loader": "6.0.6",
     "semver": "5.4.1",

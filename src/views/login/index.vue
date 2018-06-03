@@ -1,73 +1,61 @@
 <template>
   <div class="login-container">
     <el-form class="login-form" autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left">
-      <h3 class="title">vue-element-admin</h3>
-      <el-form-item prop="username">
+      <div class="title-container">
+        <h3 class="title">{{$t('login.title')}}</h3>
+      </div>
+      <el-form-item prop="email">
         <span class="svg-container svg-container_login">
           <svg-icon icon-class="user" />
         </span>
-        <el-input name="username" type="text" v-model="loginForm.username" autoComplete="on" placeholder="username" />
+        <el-input name="email" type="text" v-model="loginForm.email" autoComplete="on" :placeholder="$t('login.email')" />
       </el-form-item>
       <el-form-item prop="password">
         <span class="svg-container">
-          <svg-icon icon-class="password"></svg-icon>
+          <svg-icon icon-class="password" />
         </span>
-        <el-input name="password" :type="pwdType" @keyup.enter.native="handleLogin" v-model="loginForm.password" autoComplete="on"
-          placeholder="password"></el-input>
+        <el-input name="password" :type="passwordType" @keyup.enter.native="handleLogin" v-model="loginForm.password" autoComplete="on"
+                  :placeholder="$t('login.password')"></el-input>
           <span class="show-pwd" @click="showPwd"><svg-icon icon-class="eye" /></span>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" style="width:100%;" :loading="loading" @click.native.prevent="handleLogin">
-          Sign in
+          {{$t('login.logIn')}}
         </el-button>
       </el-form-item>
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: admin</span>
-      </div>
     </el-form>
   </div>
 </template>
 
 <script>
-import { isvalidUsername } from '@/utils/validate'
 
 export default {
   name: 'login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!isvalidUsername(value)) {
-        callback(new Error('请输入正确的用户名'))
-      } else {
-        callback()
-      }
-    }
-    const validatePass = (rule, value, callback) => {
-      if (value.length < 5) {
-        callback(new Error('密码不能小于5位'))
-      } else {
-        callback()
-      }
-    }
     return {
       loginForm: {
-        username: 'admin',
-        password: 'admin'
+        email: '',
+        password: ''
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePass }]
+        email: [
+          { required: true, message: this.$t('login.email_required'), trigger: 'blur' },
+          { type: 'email', message: this.$t('login.email_error'), trigger: ['blur', 'change'] }
+        ],
+        password: [
+          { required: true, trigger: 'blur', min: 6, message: this.$t('login.password_error', { min: 6 }) }
+        ]
       },
       loading: false,
-      pwdType: 'password'
+      passwordType: 'password'
     }
   },
   methods: {
     showPwd() {
-      if (this.pwdType === 'password') {
-        this.pwdType = ''
+      if (this.passwordType === 'password') {
+        this.passwordType = ''
       } else {
-        this.pwdType = 'password'
+        this.passwordType = 'password'
       }
     },
     handleLogin() {
@@ -75,7 +63,7 @@ export default {
         if (valid) {
           this.loading = true
           this.$store.dispatch('Login', this.loginForm).then(() => {
-            this.loading = false
+            // this.loading = false
             this.$router.push({ path: '/' })
           }).catch(() => {
             this.loading = false

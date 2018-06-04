@@ -13,7 +13,7 @@ import store from './store'
 
 import i18n from './lang' // Internationalization
 import '@/icons' // icon
-import '@/permission' // permission control
+import '@/init'
 
 Vue.use(ElementUI, {
   size: 'medium', // set element-ui default size

@@ -39,7 +39,7 @@ export const constantRouterMap = [
       path: 'dashboard',
       component: _import('dashboard/index'),
       name: 'dashboard',
-      meta: { title: 'dashboard', icon: 'dashboard', noCache: true }
+      meta: { title: 'dashboard', icon: 'dashboard', hidden: true }
     }]
   },
   {
@@ -86,3 +86,4 @@ export default new Router({
   routes: constantRouterMap
 })
 
+export const asyncRouterMap = []

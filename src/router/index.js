@@ -8,6 +8,7 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '../views/layout/Layout'
+import Empty from '@/components/Empty'
 
 /** note: submenu only apppear when children.length>=1
 *   detail see  https://panjiachen.github.io/vue-element-admin-site/#/router-and-nav?id=sidebar
@@ -39,27 +40,42 @@ export const constantRouterMap = [
       path: 'dashboard',
       component: _import('dashboard/index'),
       name: 'dashboard',
-      meta: { title: 'dashboard', icon: 'dashboard', hidden: true }
+      meta: { title: 'dashboard', icon: 'dashboard' }
     }]
   },
   {
     path: '/example',
     component: Layout,
-    redirect: '/example/table',
     name: 'Example',
     meta: { title: 'Example', icon: 'example' },
     children: [
       {
-        path: 'table',
+        path: '/example/table',
         name: 'Table',
-        component: _import('table/index'),
-        meta: { title: 'Table', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: _import('tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        component: Empty,
+        meta: { title: 'Table', icon: 'table' },
+        children: [
+          {
+            path: '/example/table/three',
+            component: Empty,
+            name: 'three',
+            meta: { title: 'three' },
+            children: [
+              {
+                path: 'inline-edit-table',
+                component: _import('table/inlineEditTable'),
+                name: 'inlineEditTable',
+                meta: { title: 'inlineEditTable' }
+              },
+              {
+                path: 'complex-table',
+                component: _import('table/complexTable'),
+                name: 'complexTable',
+                meta: { title: 'complexTable' }
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -86,4 +102,51 @@ export default new Router({
   routes: constantRouterMap
 })
 
-export const asyncRouterMap = []
+function generateModelRouters(models, path = '') {
+  return models.map(model => {
+    if (model.children && model.children.length) {
+      model.children = generateModelRouters(model.children, path + '/' + model.name)
+    }
+    let comp
+    if (path === '') {
+      comp = Layout
+    } else {
+      comp = _import('model/index')
+    }
+    return Object.assign({
+      path: path + '/' + model.name,
+      component: comp,
+      meta: {
+        title: model.name,
+        icon: model.name
+      }
+    }, model)
+  })
+}
+
+const models = [
+  {
+    name: 'categories'
+  },
+  {
+    name: 'users',
+    // title: '',
+    // icon: '',
+    children: [
+      {
+        // title: '',
+        // icon: '',
+        name: 'users'
+      },
+      {
+        name: 'roles'
+      }
+    ]
+  },
+  {
+    name: 'pictures'
+  }
+]
+
+export const modelRouterMap = generateModelRouters(models)
+// export const modelRouterMap = []

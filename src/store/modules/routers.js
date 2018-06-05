@@ -1,29 +1,15 @@
-import { asyncRouterMap, constantRouterMap } from '@/router'
+import { modelRouterMap, constantRouterMap } from '@/router'
+import { getModels } from '@/api/models'
 
-/**
- * 通过meta.role判断是否与当前用户权限匹配
- * @param roles
- * @param route
- */
-function hasPermission(roles, route) {
-  if (route.meta && route.meta.roles) {
-    return roles.some(role => route.meta.roles.indexOf(role) >= 0)
-  } else {
-    return true
-  }
-}
-
-/**
- * 递归过滤异步路由表，返回符合用户角色权限的路由表
- * @param asyncRouterMap
- * @param roles
- */
-function filterAsyncRouter(asyncRouterMap, roles) {
-  const accessedRouters = asyncRouterMap.filter(route => {
-    if (hasPermission(roles, route)) {
-      if (route.children && route.children.length) {
-        route.children = filterAsyncRouter(route.children, roles)
+function filterModelRouter(modelRouterMap, models) {
+  const accessedRouters = modelRouterMap.filter(model => {
+    if (model.children && model.children.length) {
+      model.children = filterModelRouter(model.children, models)
+      if (model.children.length) {
+        return true
       }
+    }
+    if (models.indexOf(model.name) > -1) {
       return true
     }
     return false
@@ -43,17 +29,18 @@ const routers = {
     }
   },
   actions: {
-    GenerateRoutes({ commit }, data) {
-      return new Promise(resolve => {
-        const { roles } = data
-        let accessedRouters
-        if (roles.indexOf('admin') >= 0) {
-          accessedRouters = asyncRouterMap
-        } else {
-          accessedRouters = filterAsyncRouter(asyncRouterMap, roles)
-        }
-        commit('SET_ROUTERS', accessedRouters)
-        resolve()
+    GenerateRoutes({ commit }) {
+      return new Promise((resolve, reject) => {
+        getModels().then(response => {
+          console.log(modelRouterMap)
+          const models = response.data
+          const accessedRouters = filterModelRouter(modelRouterMap, models)
+          commit('SET_ROUTERS', accessedRouters)
+          resolve()
+        }).catch(error => {
+          console.log('login', error)
+          reject(error)
+        })
       })
     }
   }

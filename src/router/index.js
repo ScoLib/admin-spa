@@ -91,9 +91,7 @@ export const constantRouterMap = [
         meta: { title: 'Form', icon: 'form' }
       }
     ]
-  },
-
-  { path: '*', redirect: '/404', hidden: true }
+  }
 ]
 
 export default new Router({
@@ -102,51 +100,38 @@ export default new Router({
   routes: constantRouterMap
 })
 
-function generateModelRouters(models, path = '') {
-  return models.map(model => {
-    if (model.children && model.children.length) {
-      model.children = generateModelRouters(model.children, path + '/' + model.name)
-    }
-    let comp
-    if (path === '') {
-      comp = Layout
-    } else {
-      comp = _import('model/index')
-    }
-    return Object.assign({
-      path: path + '/' + model.name,
-      component: comp,
-      meta: {
-        title: model.name,
-        icon: model.name
-      }
-    }, model)
-  })
-}
-
-const models = [
+export const modelRouterMap = [
   {
-    name: 'categories'
-  },
-  {
-    name: 'users',
-    // title: '',
-    // icon: '',
+    path: '/categories',
+    component: Layout,
     children: [
       {
-        // title: '',
-        // icon: '',
-        name: 'users'
-      },
-      {
-        name: 'roles'
+        path: 'index',
+        name: 'categories',
+        component: _import('form/index'),
+        meta: { title: 'categories', icon: 'categories' }
       }
     ]
   },
   {
-    name: 'pictures'
-  }
-]
+    path: '/users',
+    component: Layout,
+    meta: { title: 'users', icon: 'users' },
+    children: [
+      {
+        path: 'inline-edit-table',
+        component: _import('table/inlineEditTable'),
+        name: 'inlineEditTable',
+        meta: { title: 'inlineEditTable' }
+      },
+      {
+        path: 'complex-table',
+        component: _import('table/complexTable'),
+        name: 'complexTable',
+        meta: { title: 'complexTable' }
+      }
+    ]
+  },
 
-export const modelRouterMap = generateModelRouters(models)
-// export const modelRouterMap = []
+  { path: '*', redirect: '/404', hidden: true }
+]

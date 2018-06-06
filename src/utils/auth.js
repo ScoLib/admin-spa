@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 
-const TokenKey = 'Admin-Token'
+const TokenKey = process.env.BASE_API
 
 export function getToken() {
   return Cookies.get(TokenKey)

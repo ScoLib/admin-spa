@@ -35,6 +35,7 @@ const routers = {
           console.log(modelRouterMap)
           const models = response.data
           const accessedRouters = filterModelRouter(modelRouterMap, models)
+          console.log(accessedRouters)
           commit('SET_ROUTERS', accessedRouters)
           resolve()
         }).catch(error => {
